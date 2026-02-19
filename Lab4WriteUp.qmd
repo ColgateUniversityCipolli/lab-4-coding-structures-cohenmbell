@@ -80,6 +80,13 @@ x <- sample(x=1:10,          # sample from 1, 2, 3, ..., 10
             replace = TRUE)  # allowed to sample the same item multiple times
 ```
 
+### Solution
+```{r}
+#| size: "scriptsize"
+#| code-fold: FALSE
+(x[3])
+```
+
 ## Part b
 
 Below, I create a data frame filled with random observations.
@@ -101,29 +108,72 @@ df <- data.frame(x1 = sample(x=1:10,          # sample from 1, 2, 3, ..., 10
 ## Part b 
 Use the `head(...)` function to peek at the data frame.
 
+### Solution
+```{r}
+#| size: "scriptsize"
+#| code-fold: FALSE
+(head(df))
+```
+
 ## Part c
 Ask for the column `x1`.
+
+### Solution
+```{r}
+#| size: "scriptsize"
+#| code-fold: FALSE
+(df[ ,"x1"])
+```
 
 ## Part d
 Ask for the fifth row of the data frame.
 
+### Solution
+```{r}
+#| size: "scriptsize"
+#| code-fold: FALSE
+(df[5, ])
+```
+
 ## Part e
 Ask for the the value of `x1` in the fifth row of the data frame.
+
+### Solution
+```{r}
+#| size: "scriptsize"
+#| code-fold: FALSE
+(df[5,"x1"])
+```
 
 ## Part f
 Ask for the the value of in the third column and the fifth row of the data frame.
 
+### Solution
+```{r}
+#| size: "scriptsize"
+#| code-fold: FALSE
+(df[5,3])
+```
+
 ## Part g
 Create a sequence from 1 to 10 by 2 and use it to print the odd rows of the data frame.
+
+### Solution
+```{r}
+#| size: "scriptsize"
+#| code-fold: FALSE
+(df[seq(1,10,2), ])
+```
 
 ## Part h
 Below, I create an empty column called `x12`. Fill in the details of the `for(...)` loop to ensure `x12` is the product of `x1` and `x2`.
 ```{r}
 #| size: "scriptsize"
+#| code-fold: FALSE
 n <- nrow(df)                # How many rows to we have to fill?
 df$x12 <- rep(NA, nrow(df))   # Create an empty column for x12
 for(i in 1:nrow(df)){
-  # REPLACE WITH THE NECESSARY CODE
+  df$x12[i] = df$x1[i] * df$x2[i]
 }
 ```
 
@@ -132,11 +182,60 @@ Write a function called `calculate.score(...)` that takes three arguments repres
 $$Score = (x_1 \times 2) + x_2 - x_3$$
 Use your function to create a new column `total.score` in our data frame `df`.
 
+### Solution
+```{r}
+#| size: "scriptsize"
+#| code-fold: FALSE
+calculate.score = function(x1,x2,x3) {
+  return((x1 * 2) + x2 - x3)
+}
+df$total.score = calculate.score(df$x1,df$x2,df$x3)
+```
+
 ## Part j
 Create a function called `evaluate.row(...)` that takes one argument and returns "low" when the argument is less than 4, "mid" when the argument is between 4 and 7 (inclusive), and "high" when the arguement is 8 or larger. Then, use `sapply(...)` to apply it to column `x1`.
 
+### Solution
+```{r}
+#| size: "scriptsize"
+#| code-fold: FALSE
+evaluate.row = function(val) {
+  if (val < 4) {
+    return("low")
+  } else if (val >= 4 & val <= 7) {
+    return("mid")
+  } else {
+    return("high")
+  }
+}
+df$evaluation.x1 = sapply(df$x1,evaluate.row)
+```
+
 ## Part k
 Did we need to use loops or functions in (h.)-(j.)? That is, can we use vectorization to attain the same results in 1 line each? Where it is possible, write the line of code. Where it is not, explain why.
+
+### Solution
+For (h.):
+```{r}
+#| size: "scriptsize"
+#| code-fold: FALSE
+df$x12 = df$x1 * df$x2
+```
+
+For (i.):
+```{r}
+#| size: "scriptsize"
+#| code-fold: FALSE
+df$total.score = (df$x1 * 2) + df$x2 - df$x3
+```
+
+For (j.):
+```{r}
+#| size: "scriptsize"
+#| code-fold: FALSE
+df$evaluation.x1 = ifelse(df$x1 < 4, "low", ifelse(df$x1 <= 7, "mid", "high"))
+```
+
 
 # Complete Tasks for One Recipe
 
@@ -144,10 +243,31 @@ Did we need to use loops or functions in (h.)-(j.)? That is, can we use vectoriz
 
 Install and load the `rvest` package [@rvest].
 
+### Solution
+```{r}
+#| size: "scriptsize"
+#| code-fold: FALSE
+#| eval: FALSE
+install.packages("rvest")
+```
+```{r}
+#| size: "scriptsize"
+#| code-fold: FALSE
+library(rvest)
+```
+
 ## Part b
 
 Load the html of the `website/KimchiGrilledCheese.html` using the `read_html()` function and save the result to an object called `recipe.item`. We will use the Kimchi Grilled Cheese recipe as our prototype and extend this workflow to all recipes, so try to be as general as possible. If you do look at it, you'll notice it contains the html we saw in the developer tools in class.<br/>
 **Hint**: You can use `read_html(...)` like `read.csv(...)`. Don't forget you can use the documentation to help use it.
+
+### Solution
+```{r}
+#| size: "scriptsize"
+#| code-fold: FALSE
+url = "website/KimchiGrilledCheese.html"
+(recipe.item = read_html(url))
+```
 
 ## Part c
 
@@ -156,23 +276,65 @@ Open the html file in a web browser and open developer tools. In chrome-based br
 Find the name of the Ingredients section of the website and pull the HTML of the function using `html_element(...)` and save the results to an object called `ingredients.section`. <br/>
 **Hint**: You can ask for elements by id using a preceeding "\#". See `?html_element(...)` for a helpful example. 
 
+### Solution
+```{r}
+#| size: "scriptsize"
+#| code-fold: FALSE
+(ingredients.section = html_element(recipe.item,"#ingredients"))
+```
+
 ## Part d
 Now, we want to obtain all of the itemized items. Find the element type the individual ingredients and pull all of them from `ingredients.section` using `html_elements(...)` (note the added s) and save the results to an object called `ingredients`.<br/>
 **Hint**: You can ask for elements by type by simply specifying the tag (e.g., "p" for paragraph). See `?html_element for a helpful example.
 
+### Solution
+```{r}
+#| size: "scriptsize"
+#| code-fold: FALSE
+(ingredients = html_elements(ingredients.section,"li"))
+```
+
 ## Part e
 Similar to Part c. Find the name of the Instructions section of the website and pull the HTML of the function using `html_element(...)` and save the results to an object called `instructions.section`.<br/>
 
+### Solution
+```{r}
+#| size: "scriptsize"
+#| code-fold: FALSE
+(instructions.section = html_element(recipe.item,"#instructions"))
+```
+
 ## Part f
 Now, we want to obtain all of the enumerated items. Find the element type the individual instructions and pull all of them from `instructions.section` using `html_elements(...)` (note the added s) and save the results to an object called `instructions`.
+
+### Solution
+```{r}
+#| size: "scriptsize"
+#| code-fold: FALSE
+(instructions = html_elements(instructions.section,"li"))
+```
 
 ## Part g
 Find the class of the recipe image and pull the HTML using `html_element(...)` and save the results to an object called `image.element`. <br/>
 **Hint**: You can ask for elements by class using a preceeding ".". See `?html_element(...)` for a helpful example. Further, note that HTML elements may have more than one class (separated by a space). When that is the case, you need to choose one.
 
+### Solution
+```{r}
+#| size: "scriptsize"
+#| code-fold: FALSE
+(image.element = html_element(recipe.item,".img-fluid"))
+```
+
 ## Part h
 Use the `html_attr(...)` function to pull the source link ("src"). Then, use `paste(...)` to prepend the source link with "website/" so we have the full link.<br/>
 **Note**: This would be like adding "https://www.website.com" to get the absolute link.
+
+### Solution
+```{r}
+#| size: "scriptsize"
+#| code-fold: FALSE
+(image.url = paste0("website/",html_attr(image.element,"src")))
+```
 
 ## Part i
 Now that we have all the things we need, let's try to print the recipe. Below, I have written code to print from the objects. One by one, remove `#| eval: false` from the YAML header and add `#| echo: false` and `#| results: 'asis'`, and test. Let me know if you're stuck!
@@ -180,7 +342,8 @@ Now that we have all the things we need, let's try to print the recipe. Below, I
 **Image**
 
 ```{r}
-#| eval: false
+#| echo: false
+#| results: 'asis'
 # width="50%" shrinks the image for printing
 recipe.title <- recipe.item |> html_element("h1") |> html_text()
 cat(paste('![', recipe.title, '](', image.url, "){width=50%}", sep="")) 
@@ -189,7 +352,8 @@ cat(paste('![', recipe.title, '](', image.url, "){width=50%}", sep=""))
 **Ingredients**
 
 ```{r}
-#| eval: false
+#| echo: false
+#| results: 'asis'
 formatted_list <- paste("-", html_text(ingredients))
 cat(formatted_list, sep = "\n")
 ```
@@ -197,7 +361,8 @@ cat(formatted_list, sep = "\n")
 **Instructions**
 
 ```{r}
-#| eval: false
+#| echo: false
+#| results: 'asis'
 formatted_list <- paste("1.", html_text(instructions))
 cat(formatted_list, sep = "\n")
 ```
@@ -213,6 +378,58 @@ Open `Menu.qmd` and add code to complete the following.
 
 When you render this document, no code should be visible. Instead, you should see a five-page document as described above.
 
+```{r}
+#| echo: false
+#| results: 'asis'
+
+all_files <- list.files("website/", pattern = "*.html")
+recipe_files <- all_files[all_files != "about.html" & all_files != "index.html"]
+
+set.seed(7272)
+selected_meals <- sample(recipe_files, 4)
+
+all_ingredients <- c()
+recipe_list <- list()
+
+for (i in 1:length(selected_meals)) {
+  recipe_path <- paste0("website/", selected_meals[i])
+  raw_html <- read_html(recipe_path)
+  
+  ingreds <- html_elements(raw_html, "#ingredients li")
+  instruc <- html_elements(raw_html, "#instructions li")
+  img_element <- html_element(raw_html, "img")
+  img_src <- html_attr(img_element, "src")
+  
+  all_ingredients <- c(all_ingredients, html_text(ingreds))
+  
+  recipe_list[[i]] <- list(
+    name = gsub(".html", "", selected_meals[i]),
+    img = paste0("website/", img_src),
+    ingredients = html_text(ingreds),
+    instructions = html_text(instruc)
+  )
+}
+
+cat("# Grocery List\n")
+cat(paste("-", unique(all_ingredients)), sep = "\n")
+cat("\n\\newpage\n")
+
+for (i in 1:length(recipe_list)) {
+  current_recipe <- recipe_list[[i]]
+  
+  cat("##", current_recipe$name, "\n")
+  cat(paste0('<img src="', current_recipe$img, '" style="width: 50%; height: auto;">\n\n'))
+  
+  cat("### Ingredients\n")
+  cat(paste("-", current_recipe$ingredients), sep = "\n")
+  
+  cat("\n### Instructions\n")
+  cat(paste("1.", current_recipe$instructions), sep = "\n")
+  
+  cat("\n\\newpage\n")
+}
+```
+
 # Describe your work!
 
 ## Why a fake website?
@@ -221,10 +438,17 @@ Read [https://www.scrapingbee.com/blog/is-web-scraping-legal/](Is Web Sraping Le
 ## Conditionals
 Did you use conditional statements in your code? If yes, how. If not, are there places you could have used them but did something else?
 
+### Solution
+I used a conditional in 1.11 part (j.) to split column x1 into "low", "mid" and "high" values.
+
 ## Loops
 Did you use loops in your code? If yes, how. If not, are there places you could have used them but did something else?
+
+### Solution
+I used for-loops in part 3 to apply the code to all of the sampled recipes.
 
 ## Functions
 Did you use functions in your code? If yes, how. If not, are there places you could have used them but did something else?
 
-
+### Solution
+I used a function in 1.10 part (i.) that takes three initial values and returns the result of some arithmetic. I also used a function in 1.11 part (j.) that takes an initial value and categorizes it as either "low", "mid" or "high".
